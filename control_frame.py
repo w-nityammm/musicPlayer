@@ -2,6 +2,7 @@ import customtkinter
 import pygame
 from PIL import Image, ImageTk
 import random
+import time
 
 class ControlFrame(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -11,12 +12,14 @@ class ControlFrame(customtkinter.CTkFrame):
         self.grid_columnconfigure(2, weight=0)
         self.grid_columnconfigure(3, weight=0)
         self.grid_columnconfigure(4, weight=0)
-        self.grid_columnconfigure(5, weight=1)
+        self.grid_columnconfigure(5, weight=0)
         self.grid_columnconfigure(6, weight=0)
         self.grid_columnconfigure(7, weight=0)
         self.grid_columnconfigure(8, weight=0)
+        self.grid_columnconfigure(9, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=0)
 
-        # Load and resize images
         self.prev_image = Image.open("assets/previous.png").resize((20, 20), Image.Resampling.LANCZOS)
         self.prev_image = ImageTk.PhotoImage(self.prev_image)
 
@@ -41,32 +44,40 @@ class ControlFrame(customtkinter.CTkFrame):
         self.shuffle1_image = Image.open("assets/shuffle1.png").resize((20, 20), Image.Resampling.LANCZOS)
         self.shuffle1_image = ImageTk.PhotoImage(self.shuffle1_image)
 
-        # Create buttons with images
-        self.shuffle_button = customtkinter.CTkButton(self, image=self.shuffle_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.toggle_shuffle)
-        self.shuffle_button.grid(row=0, column=1, padx=(0, 1), pady=5)
+        self.shuffle_button = customtkinter.CTkButton(self, image=self.shuffle_image, text="", width=30, height=30, fg_color="#2b2b2b", hover_color="#2b2b2b", command=self.toggle_shuffle)
+        self.shuffle_button.grid(row=0, column=4, padx=(0, 0), pady=(10,5), sticky="ew")
 
-        self.prev_button = customtkinter.CTkButton(self, image=self.prev_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.play_prev_song)
-        self.prev_button.grid(row=0, column=2, padx=(0, 1), pady=5)
+        self.prev_button = customtkinter.CTkButton(self, image=self.prev_image, text="", width=30, height=30, fg_color="#2b2b2b", hover_color="#2b2b2b", command=self.play_prev_song)
+        self.prev_button.grid(row=0, column=5, padx=(0, 0), pady=(10,5), sticky="w")
 
-        self.play_pause_button = customtkinter.CTkButton(self, image=self.play_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.toggle_play_pause)
-        self.play_pause_button.grid(row=0, column=3, padx=1, pady=5)
+        self.play_pause_button = customtkinter.CTkButton(self, image=self.play_image, text="", width=30, height=30, fg_color="#2b2b2b", hover_color="#2b2b2b", command=self.toggle_play_pause)
+        self.play_pause_button.grid(row=0, column=5, padx=(18, 0), pady=(10,5), sticky="e")
 
-        self.next_button = customtkinter.CTkButton(self, image=self.next_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.play_next_song)
-        self.next_button.grid(row=0, column=4, padx=(1, 0), pady=5)
+        self.next_button = customtkinter.CTkButton(self, image=self.next_image, text="", width=30, height=30, fg_color="#2b2b2b", hover_color="#2b2b2b", command=self.play_next_song)
+        self.next_button.grid(row=0, column=6, padx=(0, 0), pady=(10,5), sticky="ew")
 
-        self.volume_button = customtkinter.CTkButton(self, image=self.volume_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.toggle_volume)
-        self.volume_button.grid(row=0, column=6, padx=(10, 1), pady=5)
+        self.volume_button = customtkinter.CTkButton(self, image=self.volume_image, text="", width=30, height=30, fg_color="#2b2b2b", hover_color="#2b2b2b", command=self.toggle_volume)
+        self.volume_button.grid(row=0, column=9, padx=(10, 5), pady=(15,5), sticky="e")
 
         self.volume_slider = customtkinter.CTkSlider(self, from_=0, to=1, command=self.set_volume, width=100)
-        self.volume_slider.set(0.5)  # Set initial volume to 50%
-        self.volume_slider.grid(row=0, column=7, padx=(1, 10), pady=5)
+        self.volume_slider.set(0.5)
+        self.volume_slider.grid(row=0, column=10, padx=(5, 10), pady=(15,5), sticky="e")
 
         self.is_playing = False
         self.is_muted = False
         self.is_shuffled = False
         self.previous_volume = 0.5
 
-        # Bind the end of song event to the play_next_or_random_song method
+        self.current_time_label = customtkinter.CTkLabel(self, text="00:00")
+        self.current_time_label.grid(row=1, column=1, padx=(10, 5), pady=5, sticky="w")
+
+        self.progress_bar = customtkinter.CTkProgressBar(self, width=400)
+        self.progress_bar.set(0)
+        self.progress_bar.grid(row=1, column=2, columnspan=7, padx=(5, 5), pady=5, sticky="ew")
+
+        self.total_time_label = customtkinter.CTkLabel(self, text="00:00")
+        self.total_time_label.grid(row=1, column=9, padx=(10, 5), pady=5, sticky="w")
+
         pygame.mixer.music.set_endevent(pygame.USEREVENT)
         self.master.after(100, self.check_pygame_events)
 
@@ -80,6 +91,7 @@ class ControlFrame(customtkinter.CTkFrame):
         pygame.mixer.music.unpause()
         self.play_pause_button.configure(image=self.pause_image)
         self.is_playing = True
+        self.update_progress()
 
     def pause_song(self):
         pygame.mixer.music.pause()
@@ -128,3 +140,12 @@ class ControlFrame(customtkinter.CTkFrame):
             if event.type == pygame.USEREVENT:
                 self.play_next_or_random_song()
         self.master.after(100, self.check_pygame_events)
+
+    def update_progress(self):
+        if self.is_playing:
+            current_time = pygame.mixer.music.get_pos() / 1000
+            total_time = pygame.mixer.Sound(self.master.scrollable_checkbox_frame.song_buttons[self.master.scrollable_checkbox_frame.current_song_index].cget("command").__closure__[0].cell_contents).get_length()
+            self.current_time_label.configure(text=time.strftime('%M:%S', time.gmtime(current_time)))
+            self.total_time_label.configure(text=time.strftime('%M:%S', time.gmtime(total_time)))
+            self.progress_bar.set(current_time / total_time)
+        self.master.after(1000, self.update_progress)

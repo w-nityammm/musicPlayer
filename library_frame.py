@@ -44,16 +44,13 @@ class Library(customtkinter.CTkScrollableFrame):
                 info_dict = ydl.extract_info(link, download=True)
                 new_file = ydl.prepare_filename(info_dict).replace('.webm', '.mp3').replace('.m4a', '.mp3')
 
-                # Delete the original .webm file
                 original_file = ydl.prepare_filename(info_dict)
                 if os.path.exists(original_file):
                     os.remove(original_file)
 
-            # Ensure the new file path is written to songs.txt using UTF-8 encoding
             with open('songs.txt', 'a', encoding='utf-8') as f:
                 f.write(new_file + '\n')
 
-            # Call create_song_button with the correct file path
             if self.all_songs_frame:
                 self.all_songs_frame.create_song_button(new_file)
         except Exception as e:
