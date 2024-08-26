@@ -21,8 +21,6 @@ class allSongs(customtkinter.CTkScrollableFrame):
         self.song_buttons = []
         self.song_file = "songs.txt"
         self.control_frame = control_frame
-
-        # Initialize pygame
         pygame.init()
         pygame.mixer.init()
 
@@ -58,11 +56,8 @@ class allSongs(customtkinter.CTkScrollableFrame):
         context_menu.tk_popup(event.x_root, event.y_root)
 
     def remove_song(self, file_path):
-        # Stop the song if it is currently playing or paused
         if pygame.mixer.music.get_busy() and self.get_song_index(file_path) == self.current_song_index:
             pygame.mixer.music.stop()
-
-        # Remove the song from songs.txt
         with open(self.song_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         with open(self.song_file, 'w', encoding='utf-8') as f:
@@ -70,7 +65,6 @@ class allSongs(customtkinter.CTkScrollableFrame):
                 if line.strip() != file_path:
                     f.write(line)
 
-        # Remove the song button
         for button in self.song_buttons:
             if button.cget("command").__closure__[0].cell_contents == file_path:
                 button.destroy()
@@ -93,7 +87,6 @@ class allSongs(customtkinter.CTkScrollableFrame):
                     else:
                         f.write(line)
 
-            # Update the button text and command
             for button in self.song_buttons:
                 if button.cget("command").__closure__[0].cell_contents == file_path:
                     button.configure(text=new_name)
@@ -143,7 +136,6 @@ class allSongs(customtkinter.CTkScrollableFrame):
         new_file_path = os.path.join(os.path.dirname(file_path), new_name + '.mp3')
         os.rename(file_path, new_file_path)
 
-        # Update songs.txt
         with open(self.song_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         with open(self.song_file, 'w', encoding='utf-8') as f:
@@ -153,7 +145,6 @@ class allSongs(customtkinter.CTkScrollableFrame):
                 else:
                     f.write(line)
 
-        # Update the button text and command
         for button in self.song_buttons:
             if button.cget("command").__closure__[0].cell_contents == file_path:
                 button.configure(text=new_name)
@@ -168,7 +159,7 @@ class RenameWindow(customtkinter.CTkToplevel):
         self.rename_callback = rename_callback
 
         self.geometry("300x150")
-        self.overrideredirect(True)  # Remove title bar and minimize/maximize options
+        self.overrideredirect(True)
 
         self.entry = customtkinter.CTkEntry(self, placeholder_text="Enter new name")
         self.entry.pack(pady=10, padx=10, fill="x")
@@ -190,14 +181,14 @@ class App(customtkinter.CTk):
 
         self.title("Musync")
         self.geometry("1200x600")
-        self.grid_columnconfigure(0, weight=1)  # Make the checkbox frame smaller
-        self.grid_columnconfigure(1, weight=2)  # Make the radiobutton frame bigger
-        self.grid_rowconfigure(0, weight=1)  # Allocate more height to the top frames
-        self.grid_rowconfigure(1, weight=0)  # Allocate less height to the control frame
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=0)
 
         self.control_frame = ControlFrame(self)
         self.control_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=(10, 0), sticky="nsew")
-        self.control_frame.configure(height=100)  # Set a fixed height for the control frame
+        self.control_frame.configure(height=100)
 
         self.scrollable_checkbox_frame = allSongs(self, title="All songs", control_frame=self.control_frame)
         self.scrollable_checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsew")

@@ -41,7 +41,6 @@ class ControlFrame(customtkinter.CTkFrame):
         self.shuffle1_image = Image.open("assets/shuffle1.png").resize((20, 20), Image.Resampling.LANCZOS)
         self.shuffle1_image = ImageTk.PhotoImage(self.shuffle1_image)
 
-        # Create buttons with images
         self.shuffle_button = customtkinter.CTkButton(self, image=self.shuffle_image, text="", width=30, height=30, fg_color="#2b2b2b", command=self.toggle_shuffle)
         self.shuffle_button.grid(row=0, column=1, padx=(0, 1), pady=5)
 
@@ -58,7 +57,7 @@ class ControlFrame(customtkinter.CTkFrame):
         self.volume_button.grid(row=0, column=6, padx=(10, 1), pady=5)
 
         self.volume_slider = customtkinter.CTkSlider(self, from_=0, to=1, command=self.set_volume, width=100)
-        self.volume_slider.set(0.5)  # Set initial volume to 50%
+        self.volume_slider.set(0.5)
         self.volume_slider.grid(row=0, column=7, padx=(1, 10), pady=5)
 
         self.is_playing = False
@@ -66,7 +65,6 @@ class ControlFrame(customtkinter.CTkFrame):
         self.is_shuffled = False
         self.previous_volume = 0.5
 
-        # Bind the end of song event to the play_next_or_random_song method
         pygame.mixer.music.set_endevent(pygame.USEREVENT)
         self.master.after(100, self.check_pygame_events)
 
