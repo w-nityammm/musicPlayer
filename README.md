@@ -14,6 +14,11 @@ Light-weight and user friendly music player app made using CustomTkinter with in
    pip install -r requirements.txt
    ```
 
+3. Install FFmpeg from:
+   ```
+   https://www.ffmpeg.org/download.html
+   ```
+
 ## Usage
 
 Run the app:
