@@ -6,7 +6,7 @@ Light-weight and user friendly music player app made using CustomTkinter with in
 
 1. Clone the repository:
    ```
-   https://github.com/w-nityammm/musicPlayer.git
+   git clone https://github.com/w-nityammm/musicPlayer.git
    ```
 
 2. Install the required dependencies:
