@@ -14,10 +14,14 @@ Light-weight and user friendly music player app made using CustomTkinter with in
    pip install -r requirements.txt
    ```
 
-3. Install FFmpeg from:
+3. Install FFmpeg on your C drive from:
    ```
-   https://www.ffmpeg.org/download.html
+   https://www.gyan.dev/ffmpeg/builds/#release-builds
    ```
+4. Rename extracted folder to "ffmpeg" and add it to PATH:
+   ```
+   setx /m PATH "C:\ffmpeg\bin;%PATH%"
+   ```   
 
 ## Usage
 
