@@ -175,6 +175,7 @@ class RenameWindow(customtkinter.CTkToplevel):
         if new_name:
             self.rename_callback(self.file_path, new_name)
             self.destroy()
+
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -185,6 +186,9 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=2)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
+
+        # Set the favicon
+        self.iconbitmap(os.path.join("assets", "favicon.ico"))
 
         self.control_frame = ControlFrame(self)
         self.control_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=(10, 0), sticky="nsew")
